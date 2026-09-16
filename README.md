@@ -54,13 +54,31 @@ docker build -t vue-film-app .
 
 Run the application in a Docker container:
 
+### Development
+
+For development with hot reload:
+
+```bash
+docker compose up -d
+```
+
+The application will be available at http://localhost:5173.
+
+### Production
+
+Build the production Docker image:
+
+```bash
+docker build -t vue-film-app .
+```
+
+Then run the container:
+
 ```bash
 docker run -p 8080:80 vue-film-app
 ```
 
-The application will be available at:
-
-http://localhost:8080/
+The application will be available at http://localhost:8080/
 
 ## Project structure
 
