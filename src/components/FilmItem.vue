@@ -16,7 +16,7 @@ defineProps<{ film: Film }>();
                 <h3 class="is-size-4">{{ film.Title }}</h3>
                 <br />
                 <span class="is-uppercase is-size-6 has-text-grey">{{ film.Type }}</span> -
-                <time datetime="{{ film.Year }}">{{ film.Year }}</time>
+                <time :datetime="film.Year">{{ film.Year }}</time>
             </div>
         </div>
     </div>

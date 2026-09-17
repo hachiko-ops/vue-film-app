@@ -3,14 +3,13 @@ import { ref, watch } from 'vue';
 import { debounce } from 'lodash-es';
 import axios from 'axios';
 import type { Film, OmdbResponse } from '../interfaces.ts';
-
-const API_URL = 'https://www.omdbapi.com/';
-const API_KEY = 'ad38cdaa';
+import { API_URL, API_KEY } from '../interfaces';
   
 const inputSearch = ref('');
 
 const emit = defineEmits<{ 
-  updateFilms: [films: Film[]] 
+  updateFilms: [films: Film[]],
+  inputSearch: [search: string]
 }>();
 
 // Viene chiamata ogni volta che l'utente smette di scrivere per 300millisecondi
@@ -20,18 +19,19 @@ const updateDebounced = debounce(() => {
 
 watch(inputSearch, (val:string) => {
   if( val.length > 2 ) {
+    emit('inputSearch', val);
     updateDebounced();
   }
 })
 
 async function searchMovie(){
   try {
-    const response = await axios.get(API_URL, {
+    const response = await axios.get<OmdbResponse>(API_URL, {
       params: {
         apikey: API_KEY,
         s: inputSearch.value
       }});
-      const data = response.data as OmdbResponse;
+      const data = response.data;
   
       if( data.totalResults > 0 ) {
         emit('updateFilms', data.Search);
@@ -44,7 +44,7 @@ async function searchMovie(){
 </script>
 
 <template>
-    <header class="section">
+    <header class="section pt-5">
         <div class="columns">
             <div class="column is-one-third has-text-left">
               <h1 class="title">Found a movie</h1>
