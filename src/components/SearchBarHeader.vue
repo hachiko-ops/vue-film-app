@@ -2,15 +2,12 @@
 import { ref, watch } from 'vue';
 import { debounce } from 'lodash-es';
 import axios from 'axios';
-import type { Film, OmdbResponse } from '../interfaces.ts';
+import type { OmdbResponse } from '../interfaces.ts';
 import { API_URL, API_KEY } from '../interfaces';
+import { useFilmStore } from '../store';
   
 const inputSearch = ref('');
-
-const emit = defineEmits<{ 
-  updateFilms: [films: Film[]],
-  inputSearch: [search: string]
-}>();
+const store = useFilmStore();
 
 // Viene chiamata ogni volta che l'utente smette di scrivere per 300millisecondi
 const updateDebounced = debounce(() => {
@@ -19,7 +16,7 @@ const updateDebounced = debounce(() => {
 
 watch(inputSearch, (val:string) => {
   if( val.length > 2 ) {
-    emit('inputSearch', val);
+    store.searchTerm = val;
     updateDebounced();
   }
 })
@@ -34,7 +31,7 @@ async function searchMovie(){
       const data = response.data;
   
       if( data.totalResults > 0 ) {
-        emit('updateFilms', data.Search);
+        store.films = data.Search;
       }
   } catch (error) {
     console.error('Error fetching movies:', error);

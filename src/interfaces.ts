@@ -13,3 +13,8 @@ export interface OmdbResponse {
   totalResults: number;
   Response: string;
 }
+
+export interface AppState {
+  films: Film[];
+  searchTerm: string;
+}
