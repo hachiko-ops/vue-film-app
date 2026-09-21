@@ -2,8 +2,10 @@
 import SearchBarHeader from './components/SearchBarHeader.vue';
 import FilmItem from './components/FilmItem.vue';
 import { useFilmStore } from './store';
+import FilmDetailsModal from './components/FilmDetailsModal.vue';
 
 const store = useFilmStore();
+
 
 </script>
 
@@ -25,6 +27,7 @@ const store = useFilmStore();
     </div>
   </div>
 </div>
+<FilmDetailsModal />
 </template>
 
 <style>

@@ -1,7 +1,11 @@
 <script setup lang="ts">
 import type { Film } from '../interfaces.ts';
+import { useFilmStore } from '../store';
 
-defineProps<{ film: Film }>();
+const props = defineProps<{ film: Film }>();
+const film = props.film;
+const store = useFilmStore();
+
 </script>
 <template>
     <div class="card">
@@ -18,6 +22,9 @@ defineProps<{ film: Film }>();
                 <span class="is-uppercase is-size-6 has-text-grey">{{ film.Type }}</span> -
                 <time :datetime="film.Year">{{ film.Year }}</time>
             </div>
+        </div>
+        <div class="card-footer">
+            <a href="#" class="card-footer-item" @click="store.openModal(film)" >View Details</a>
         </div>
     </div>
 </template>
