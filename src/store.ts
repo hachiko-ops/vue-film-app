@@ -9,7 +9,7 @@ export const useFilmStore = defineStore('filmStore', {
         searchTerm: '',
         selectedFilm: null as Film | null,
         isModalOpen: false,
-        wishlist: [] as Film[],
+        wishlist: JSON.parse(localStorage.getItem('wishlist') || '[]') as Film[],
         showWishlist: false
     } as AppState),
 
@@ -31,6 +31,8 @@ export const useFilmStore = defineStore('filmStore', {
             } else {
                 this.wishlist = this.wishlist.filter(wishlistFilm => wishlistFilm.imdbID !== film.imdbID);
             }
+
+            localStorage.setItem('wishlist', JSON.stringify(this.wishlist));
         },
         isInWishlist(film: Film) {
             return this.wishlist.some(wishlistFilm => wishlistFilm.imdbID === film.imdbID);
