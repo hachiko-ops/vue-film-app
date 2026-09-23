@@ -1,10 +1,13 @@
 <script setup lang="ts">
 import { useFilmStore } from '../store';
 
+
 const store = useFilmStore();
 
 </script>
 <template>
+
+
     <div id="film-details-modal" class="modal" :class="{ 'is-active': store.isModalOpen }">
         <div class="modal-background"></div>
         <div class="modal-card">

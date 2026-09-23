@@ -25,6 +25,10 @@ const store = useFilmStore();
         </div>
         <div class="card-footer">
             <a href="#" class="card-footer-item" @click="store.openModal(film)" >View Details</a>
+            <a href="#" class="card-footer-item" @click="store.toggleWishlistItem(film)" >
+                <span v-if="store.isInWishlist(film)">Remove from Wishlist</span>
+                <span v-else>Add to Wishlist</span>
+            </a>
         </div>
     </div>
 </template>

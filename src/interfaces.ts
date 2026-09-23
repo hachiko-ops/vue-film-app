@@ -38,4 +38,6 @@ export interface AppState {
   searchTerm: string;
   selectedFilm: Film | null;
   isModalOpen: boolean;
+  wishlist: Film[];
+  showWishlist: boolean;
 }

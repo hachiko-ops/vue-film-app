@@ -8,7 +8,9 @@ export const useFilmStore = defineStore('filmStore', {
         films: [] as Film[],
         searchTerm: '',
         selectedFilm: null as Film | null,
-        isModalOpen: false
+        isModalOpen: false,
+        wishlist: [] as Film[],
+        showWishlist: false
     } as AppState),
 
     actions: {
@@ -19,6 +21,19 @@ export const useFilmStore = defineStore('filmStore', {
         closeModal() {
             this.isModalOpen = false;
             this.selectedFilm = null;
+        },
+        toggleWishlist() {
+            this.showWishlist = !this.showWishlist;
+        },
+        toggleWishlistItem(film: Film) {
+            if (!this.wishlist.some(wishlistFilm => wishlistFilm.imdbID === film.imdbID)) {
+                this.wishlist.push(film);
+            } else {
+                this.wishlist = this.wishlist.filter(wishlistFilm => wishlistFilm.imdbID !== film.imdbID);
+            }
+        },
+        isInWishlist(film: Film) {
+            return this.wishlist.some(wishlistFilm => wishlistFilm.imdbID === film.imdbID);
         }
     }
 });

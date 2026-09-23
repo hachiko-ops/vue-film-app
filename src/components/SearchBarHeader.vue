@@ -32,6 +32,7 @@ async function searchMovie(){
   
       if( data.totalResults > 0 ) {
         store.films = data.Search;
+        store.showWishlist = false;
       }
   } catch (error) {
     console.error('Error fetching movies:', error);
@@ -54,6 +55,9 @@ async function searchMovie(){
                 <div class="control">
                     <button class="button is-info" @click="searchMovie" >
                     Search
+                    </button>
+                    <button class="button is-warning" @click="store.toggleWishlist()" >
+                        Wishlist
                     </button>
                 </div>
                 </div>
