@@ -3,7 +3,7 @@ import SearchBarHeader from './components/SearchBarHeader.vue';
 import FilmItem from './components/FilmItem.vue';
 import { useFilmStore } from './store';
 import FilmDetailsModal from './components/FilmDetailsModal.vue';
-import { computed } from 'vue';
+import FilmChat from './components/FilmChat.vue';
 
 const store = useFilmStore();
 </script>
@@ -44,15 +44,6 @@ const store = useFilmStore();
     </div>
   </div>  
   <FilmDetailsModal />
+  <FilmChat />
 </template>
 
-<style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-}
-</style>

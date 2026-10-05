@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia';
 import axios from 'axios';
-import type { Film, AppState } from './interfaces.ts';
+import type { Film, AppState, ChatMessage } from './interfaces.ts';
 import { API_URL, API_KEY } from './interfaces';
 
 export const useFilmStore = defineStore('filmStore', {
@@ -10,22 +10,24 @@ export const useFilmStore = defineStore('filmStore', {
         selectedFilm: null as Film | null,
         isModalOpen: false,
         wishlist: JSON.parse(localStorage.getItem('wishlist') || '[]') as Film[],
-        showWishlist: false
+        showWishlist: false,
+        isChatOpen: false,
+        chatMessages: [] as ChatMessage[]
     } as AppState),
 
     actions: {
-        openModal(film: Film) {
+        openModal(film: Film): void {
             this.isModalOpen = true;
             getFilmDetails(film);
         },
-        closeModal() {
+        closeModal() :void {
             this.isModalOpen = false;
             this.selectedFilm = null;
         },
-        toggleWishlist() {
+        toggleWishlist() : void {
             this.showWishlist = !this.showWishlist;
         },
-        toggleWishlistItem(film: Film) {
+        toggleWishlistItem(film: Film) : void{
             if (!this.wishlist.some(wishlistFilm => wishlistFilm.imdbID === film.imdbID)) {
                 this.wishlist.push(film);
             } else {
@@ -34,8 +36,23 @@ export const useFilmStore = defineStore('filmStore', {
 
             localStorage.setItem('wishlist', JSON.stringify(this.wishlist));
         },
-        isInWishlist(film: Film) {
+        isInWishlist(film: Film) : boolean{
             return this.wishlist.some(wishlistFilm => wishlistFilm.imdbID === film.imdbID);
+        },
+        openChat():void{
+            this.isChatOpen = true;
+        },
+        closeChat():void {
+            this.isChatOpen = false;
+        },
+        addMessage( newMessage : string ) : void {
+            const message: ChatMessage = {
+                id: this.chatMessages.length + 1,
+                text: newMessage,
+                sender: 'user',
+                timestamp: new Date()
+            };
+            this.chatMessages.push(message);
         }
     }
 });

@@ -40,4 +40,13 @@ export interface AppState {
   isModalOpen: boolean;
   wishlist: Film[];
   showWishlist: boolean;
+  isChatOpen: boolean;
+  chatMessages: ChatMessage[];
+}
+
+export interface ChatMessage {
+  id: number;
+  text: string;
+  sender: 'user' | 'assistant';
+  timestamp: Date;
 }
