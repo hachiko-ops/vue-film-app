@@ -1,5 +1,4 @@
 from django.http import JsonResponse
-from django.shortcuts import render
 
 def search(request):
     if request.method == 'GET':
@@ -7,6 +6,11 @@ def search(request):
 
     if( search is None or search == ''):
         return JsonResponse({"error": "Search parameter is required"}, status=400)
+
+    if len(search) < 3:
+        return JsonResponse({"error": "Search parameter must be at least 3 characters long"}, status=400)
+
+    
     
     # Sample data for demonstration purposes
     films = [
