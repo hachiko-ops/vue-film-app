@@ -7,9 +7,18 @@ import { useFilmStore } from '../store';
 const store = useFilmStore();
 const newUserMessage = ref('');
 
+// Generate a unique session ID for the user if it doesn't exist in localStorage
+let storeSessionId = localStorage.getItem('session_id');
+if( !storeSessionId ) {
+    storeSessionId = crypto.randomUUID();
+    localStorage.setItem('session_id', storeSessionId);
+}
+
 const sendMessage = () => {
     if (newUserMessage.value.trim() !== '') {
-        store.addMessage(newUserMessage.value);
+        // Send the message to the backend for processing 
+        store.sendChatMessage(newUserMessage.value, storeSessionId);
+
         newUserMessage.value = '';
     }
 }
