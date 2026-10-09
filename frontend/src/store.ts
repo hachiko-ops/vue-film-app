@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia';
 import axios from 'axios';
 import type { Film, AppState, ChatMessage } from './interfaces.ts';
-import { API_URL, API_KEY } from './interfaces';
+import { API_URL, API_KEY, CHAT_API_URL } from './interfaces';
 
 export const useFilmStore = defineStore('filmStore', {
     state: () => ({
@@ -53,7 +53,15 @@ export const useFilmStore = defineStore('filmStore', {
                 timestamp: new Date()
             };
             this.chatMessages.push(message);
-        }
+        },
+        sendChatMessage( newMessage : string, session_id : string ) : void {
+            this.addMessage(newMessage);
+
+            // try {
+            //     const response = await axios.get(CHAT_API_URL+'filters/'+session_id+'?message='+newMessage);
+            // }
+        },
+        //searchMovies( t: string, type: string = 'movie', y: string | undefined , ) : void {
     }
 });
 

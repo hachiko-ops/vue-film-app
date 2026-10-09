@@ -1,5 +1,6 @@
 export const API_URL = 'https://www.omdbapi.com/';
 export const API_KEY = 'ad38cdaa';
+export const CHAT_API_URL = 'http://localhost:8000/api/films/'
 export interface Film {
     Title: string;
     Year: string;
