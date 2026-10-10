@@ -21,3 +21,21 @@ pnpm-debug.log*
 *.njsproj
 *.sln
 *.sw?
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Django database
+backend/db.sqlite3
+
+# Frontend build and cache
+frontend/dist/
+frontend/node_modules/
+frontend/.vite/
+
+# Environment variables
+.env
+.env.*
+!.env.example
