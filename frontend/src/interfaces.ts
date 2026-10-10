@@ -1,5 +1,5 @@
 export const API_URL = 'https://www.omdbapi.com/';
-export const API_KEY = 'ad38cdaa';
+export const API_KEY = import.meta.env.VITE_OMDB_API_KEY;;
 export const CHAT_API_URL = 'http://localhost:8000/api/films/'
 export interface Film {
     Title: string;
