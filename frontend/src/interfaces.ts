@@ -1,6 +1,8 @@
 export const API_URL = 'https://www.omdbapi.com/';
 export const API_KEY = import.meta.env.VITE_OMDB_API_KEY;;
 export const CHAT_API_URL = 'http://localhost:8000/api/films/'
+
+export type ChatSender = 'user' | 'assistant';
 export interface Film {
     Title: string;
     Year: string;
@@ -43,11 +45,12 @@ export interface AppState {
   showWishlist: boolean;
   isChatOpen: boolean;
   chatMessages: ChatMessage[];
+  isChatLoading: boolean;
 }
 
 export interface ChatMessage {
   id: number;
   text: string;
-  sender: 'user' | 'assistant';
+  sender: ChatSender;
   timestamp: Date;
 }

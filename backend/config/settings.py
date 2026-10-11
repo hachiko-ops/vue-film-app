@@ -40,7 +40,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'films',
-    'public'
+    'public',
+    'corsheaders'
 ]
 
 MIDDLEWARE = [
@@ -51,6 +52,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    "corsheaders.middleware.CorsMiddleware",
+    "django.middleware.common.CommonMiddleware",    
 ]
 
 ROOT_URLCONF = 'config.urls'
@@ -134,3 +137,7 @@ GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY")
 
 OMDB_API_URL="http://www.omdbapi.com/"
 OMDB_API_KEY=os.environ.get("OMDB_API_KEY")
+
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:5173",
+]

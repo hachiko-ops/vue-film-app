@@ -1,2 +1,3 @@
 Django
 google-genai
+django-cors-headers

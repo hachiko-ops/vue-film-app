@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia';
 import axios from 'axios';
-import type { Film, AppState, ChatMessage } from './interfaces.ts';
+import type { Film, AppState, ChatMessage, ChatSender} from './interfaces.ts';
 import { API_URL, API_KEY, CHAT_API_URL } from './interfaces';
 
 export const useFilmStore = defineStore('filmStore', {
@@ -12,7 +12,8 @@ export const useFilmStore = defineStore('filmStore', {
         wishlist: JSON.parse(localStorage.getItem('wishlist') || '[]') as Film[],
         showWishlist: false,
         isChatOpen: false,
-        chatMessages: [] as ChatMessage[]
+        chatMessages: [] as ChatMessage[],
+        isChatLoading: false
     } as AppState),
 
     actions: {
@@ -45,23 +46,34 @@ export const useFilmStore = defineStore('filmStore', {
         closeChat():void {
             this.isChatOpen = false;
         },
-        addMessage( newMessage : string ) : void {
+        addMessage( newMessage : string, sender:ChatSender ) : void {
             const message: ChatMessage = {
                 id: this.chatMessages.length + 1,
                 text: newMessage,
-                sender: 'user',
+                sender: sender,
                 timestamp: new Date()
             };
             this.chatMessages.push(message);
         },
-        sendChatMessage( newMessage : string, session_id : string ) : void {
-            this.addMessage(newMessage);
+        async sendChatMessage( newMessage : string, session_id : string ) {
+            this.addMessage(newMessage, 'user');
+            this.isChatLoading = true;
+            try {
+                const response = await axios.get(CHAT_API_URL+'search/'+session_id+'?s='+newMessage);
+                if( response.data.films.length == 0 ) {
+                    this.addMessage(response.data.suggest, 'assistant');
+                    this.isChatLoading = false;
+                    return;
+                }
 
-            // try {
-            //     const response = await axios.get(CHAT_API_URL+'filters/'+session_id+'?message='+newMessage);
-            // }
+                this.films.push(...response.data.films);
+                this.addMessage("I've updated the film recommendations for you!",'assistant');
+                this.isChatLoading = false;
+            } catch (error) {
+                console.log(error);
+            }
+
         },
-        //searchMovies( t: string, type: string = 'movie', y: string | undefined , ) : void {
     }
 });
 

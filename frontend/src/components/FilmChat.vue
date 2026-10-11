@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import {ref} from 'vue';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
-import { faComment } from '@fortawesome/free-solid-svg-icons'
+import { faComment, faPaperPlane} from '@fortawesome/free-solid-svg-icons'
 import { useFilmStore } from '../store';
 
 const store = useFilmStore();
@@ -24,54 +24,68 @@ const sendMessage = () => {
 }
 </script>
 <template>
-    <button id="chat-toggle" class="button is-primary is-rounded chat-trigger-btn"
-        :class="{'is-hidden': store.isChatOpen}" @click="store.openChat()">
-        <span class="icon is-medium">
-            <FontAwesomeIcon :icon="faComment" size="lg" />
+    <button class="button is-primary is-rounded chat-trigger-btn"
+        :class="{ 'is-hidden': store.isChatOpen }" @click="store.openChat()" aria-label="Open chat" >
+        <span class="icon">
+            <FontAwesomeIcon :icon="faComment" />
         </span>
     </button>
 
-    <!-- FINESTRA DI CHAT FLUTTUANTE -->
-    <div id="chat-window" class="panel is-link" :class="{ 'is-hidden': !store.isChatOpen }">
+    <section class="chat-window" :class="{ 'is-hidden': !store.isChatOpen }" >
+        <header class="chat-header">
+            <div class="is-flex is-align-items-center">
+                <span class="chat-avatar">
+                    <FontAwesomeIcon :icon="faComment" />
+                </span>
 
-        <!-- Intestazione della Chat -->
-        <header class="panel-heading is-flex is-justify-content-space-between is-align-items-center">
-            <div class="">
-                <strong class="has-text-white ml-2">Assistenza Clienti</strong>
+                <div>
+                    <p class="has-text-weight-semibold">
+                        Film Assistant
+                    </p>
+                    <p class="chat-status">Ask me about films</p>
+                </div>
             </div>
-            <!-- Pulsante per chiudere direttamente dall'header -->
-            <button id="chat-close" class="delete is-medium" @click="store.closeChat()"></button>
+
+            <button class="delete" aria-label="Close chat" @click="store.closeChat()"></button>
         </header>
 
-        <!-- Corpo della Chat (Scrollabile) -->
-        <div v-for="message in store.chatMessages" :key="message.id"
-            class="panel-block is-flex-direction-column align-items-stretch">
-            <div class="is-flex align-self-start mb-2">
-                <div class="message "
-                    :class="{ 'is-info': message.sender === 'assistant', 'is-success': message.sender === 'user' }">
-                    <div class="message-body">
-                        {{ message.text }}
-                    </div>
+        <div class="chat-body">
+            <div v-for="message in store.chatMessages" :key="message.id" class="chat-row"
+                :class="message.sender === 'user' ? 'chat-row-user' : 'chat-row-assistant'" >
+                <div class="chat-bubble" :class="message.sender === 'user' ? 'chat-bubble-user' : 'chat-bubble-assistant'" >
+                    {{ message.text }}
+                </div>
+            </div>
+
+            <div v-if="store.isChatLoading" class="chat-row chat-row-assistant">
+                <div class="chat-bubble chat-bubble-assistant">
+                    Thinking...
                 </div>
             </div>
         </div>
 
-        <!-- Footer della Chat (Form di Input) -->
-        <footer class="panel-block">
-            <div class="field has-addons">
-                <div class="control">
-                    <input class="input is-rounded is-small" type="text" placeholder="Write a message..."
-                        v-model="newUserMessage">
-                </div>
-                <div class="control">
-                    <button class="button is-primary is-rounded is-small" @click="sendMessage">
-                        <span class="icon">
-                            <i class="fas fa-paper-plane"></i>
-                        </span>
-                    </button>
-                </div>
-            </div>
-        </footer>
+        <!-- Input -->
+        <footer class="chat-footer">
+            <form class="chat-form" @submit.prevent="sendMessage">
+                <input
+                    class="input chat-input"
+                    type="text"
+                    placeholder="Ask about a film..."
+                    v-model="newUserMessage"
+                    :disabled="store.isChatLoading"
+                />
 
-    </div>
+                <button
+                    class="button is-primary chat-send-btn"
+                    type="submit"
+                    :disabled="store.isChatLoading || !newUserMessage.trim()"
+                    aria-label="Send message"
+                >
+                    <span class="icon">
+                        <FontAwesomeIcon :icon="faPaperPlane" />
+                    </span>
+                </button>
+            </form>
+        </footer>
+    </section>
 </template>
