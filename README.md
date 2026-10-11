@@ -1,18 +1,28 @@
 # Vue Film App
 
-A movie discovery application built with Vue 3 and TypeScript. It lets users search for films, view detailed information, save titles to a wishlist, and experiment with natural-language search parsing using Gemini.
+A movie discovery application built with Vue 3 and TypeScript, with a Django backend for experimenting with AI-powered, natural-language film search.
+
+The project combines a movie discovery interface, a personal wishlist, and an AI-powered backend that uses Google Gemini to interpret search requests and extract structured criteria. It is also a hands-on project for exploring Python, Django, API integration, and the evaluation of AI-generated results.
 
 ## Features
 
-- **Movie search:** search the OMDb catalogue by title.
-- **Debounced search:** typing pauses trigger a search after a short delay.
-- **Film details:** open a modal with information such as release date, genre, director, actors, and plot.
-- **Wishlist:** add or remove films and keep the wishlist in browser `localStorage`.
-- **Floating chat interface:** a chat widget UI with a message list and input.
-- **AI search-query parsing (backend):** a Django endpoint uses Google Gemini to extract structured search filters from a natural-language query, including title, genre, release year, director, actors, and language.
-- **Containerized development:** Docker Compose runs the Vue frontend and Django backend as separate services.
+### Frontend
+- **Movie search:** Search the OMDb catalogue by title.
+- **Debounced search:** Avoid unnecessary requests while typing.
+- **Film details:** View information such as release year, genre, director, actors, and plot in a modal.
+- **Wishlist:** Add or remove films and persist the list in browser `localStorage`.
+- **Floating chat interface:** A chat-style UI with a message list and input field.
 
-> **Current status:** the Gemini query-parsing endpoint is implemented in the backend. The floating chat UI currently manages messages in the frontend store; it is not yet connected to the Gemini endpoint.
+### Backend and AI
+- **Natural-language query parsing:** Use Google Gemini to extract structured search criteria from a natural-language request.
+- **Structured AI responses:** Extract information such as genre, release year, director, actors, language, and an explanation of the interpretation.
+- **Film lookup:** Integrate with OMDb to retrieve film details and check suggested titles.
+- **Search quality tracking:** Store search information and track titles that cannot be found, supporting further analysis of AI-generated suggestions.
+
+### Development environment
+- **Containerized setup:** Run the Vue frontend and Django backend as separate services using Docker Compose.
+
+> **Current status:** The frontend movie discovery features and the Django AI-search backend are under development. The backend includes Gemini-based query interpretation and OMDb integration. The floating chat interface is not yet connected to the backend search endpoint.
 
 ## Tech stack
 
@@ -30,10 +40,12 @@ A movie discovery application built with Vue 3 and TypeScript. It lets users sea
 - Python 3.13
 - Django
 - Google Gen AI SDK (Gemini)
-- SQLite (Django's default database configuration)
+- Requests (HTTP client)
+- SQLite
 
 ### Development tools
-- Docker and Docker Compose
+- Docker
+- Docker Compose
 - ESLint
 
 ## Project structure
@@ -42,8 +54,8 @@ A movie discovery application built with Vue 3 and TypeScript. It lets users sea
 vue-film-app/
 ├── backend/
 │   ├── config/          # Django project configuration
-│   ├── films/           # Film search and Gemini query parsing endpoint
-│   ├── public/          # Public Django views and templates
+│   ├── films/           # Film search, AI integration, and API logic
+│   ├── public/          # Public views and templates
 │   ├── Dockerfile
 │   ├── manage.py
 │   └── requirements.txt
@@ -61,34 +73,45 @@ vue-film-app/
 ## Requirements
 
 - Docker and Docker Compose
-- An OMDb API key for movie search
-- A Google Gemini API key for the AI query-parsing endpoint
+- An OMDb API key
+- A Google Gemini API key
 
-## Run with Docker Compose
+## Getting started
 
-1. Clone the repository and open the project directory.
-2. Create `backend/.env` and add your Gemini API key:
+### 1. Configure environment variables
 
-   ```env
-   GEMINI_API_KEY=your_gemini_api_key
-   ```
+Clone the repository and navigate to the project directory.
 
-3. Start both services:
+Create a `backend/.env` file with the credentials required by the backend:
 
-   ```bash
-   docker compose up --build
-   ```
+```env
+GEMINI_API_KEY=your_gemini_api_key
+OMDB_API_KEY=your_omdb_api_key
+```
 
-4. Open the frontend at [http://localhost:5173](http://localhost:5173). The Django backend is available at [http://localhost:8000](http://localhost:8000).
+Make sure the Django settings load these environment variables and that the `.env` file is excluded from version control.
 
-The Compose configuration mounts the source directories into the containers, so code changes are available during development.
+### 2. Start the application
 
-## AI search-query endpoint
+Run the following command from the project root:
 
-The backend exposes a GET endpoint at:
+```bash
+docker compose up --build
+```
 
-```text
-/api/films/search?s=<natural-language-query>
+### 3. Open the application
+
+- **Frontend:** http://localhost:5173
+- **Django backend:** http://localhost:8000
+
+The Compose configuration mounts the source directories into the containers, allowing code changes to be picked up during development.
+
+## AI search endpoint
+
+The Django backend exposes an endpoint for interpreting natural-language film searches.
+
+```http
+GET /api/films/search?s=<natural-language-query>
 ```
 
 Example:
@@ -98,37 +121,42 @@ curl --get "http://localhost:8000/api/films/search" \
   --data-urlencode "s=Find a comedy from the 1980s"
 ```
 
-Gemini is prompted to return a JSON object containing these fields:
+Gemini interprets the query and extracts structured search criteria, including:
 
 - `title`
 - `genre`
 - `year`
 - `director`
-- `actors` (list)
+- `actors`
 - `language`
-- `reason` (short explanation of the extracted filters)
+- `reason`
 
-The endpoint returns HTTP 400 if the search parameter is missing or shorter than three characters, and HTTP 405 for methods other than GET.
+The `reason` field explains how the natural-language request was interpreted.
 
-## Frontend commands
+The endpoint returns HTTP 400 when the search parameter is missing or shorter than three characters, and HTTP 405 for unsupported HTTP methods.
 
-Run these commands from the `frontend/` directory:
+The AI and film-lookup services are being developed to support validation of suggested titles and the collection of search-quality metrics.
+
+## Frontend development
+
+To run the frontend outside Docker, navigate to the `frontend/` directory:
 
 ```bash
 npm install
 npm run dev
 ```
 
-Other available scripts:
+Available scripts:
 
 ```bash
-npm run build  # Create a production build
-npm run preview # Preview the production build
-npm run lint   # Run ESLint
+npm run build    # Create a production build
+npm run preview  # Preview the production build
+npm run lint     # Run ESLint
 ```
 
 ## Notes
 
-- The wishlist is stored in the browser's `localStorage`; it is not synced across browsers or devices.
-- The AI endpoint currently extracts search criteria; it does not yet execute a database search or return matching films.
-- Keep API keys out of source control. For production, move external API credentials out of frontend code and configure them securely on the server.
+- The wishlist is stored in browser `localStorage` and is not synchronized across browsers or devices.
+- The chat interface is not yet connected to the Django backend.
+- AI-generated criteria and film suggestions may require validation; the project explores ways to measure and improve result quality.
+- API keys must never be committed to source control. Keep external API credentials on the server and configure them through environment variables.
