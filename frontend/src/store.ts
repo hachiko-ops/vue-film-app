@@ -65,7 +65,7 @@ export const useFilmStore = defineStore('filmStore', {
                     this.isChatLoading = false;
                     return;
                 }
-
+                this.films = [];
                 this.films.push(...response.data.films);
                 this.addMessage("I've updated the film recommendations for you!",'assistant');
                 this.isChatLoading = false;
