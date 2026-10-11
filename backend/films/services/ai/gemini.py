@@ -1,10 +1,10 @@
 import json
 
 from google import genai
+from .base import BaseAIProvider
 from google.genai import types
-from ..models import SearchRequest
 
-class GeminiService:
+class GeminiService(BaseAIProvider):
     """
     Abstracts the AI provider and normalizes its output into a
     consistent structure for the application.
@@ -16,7 +16,7 @@ class GeminiService:
     def __init__(self):
         self.client = genai.Client()
 
-    def get_films(self, search: str, session_id: str = None) -> dict:
+    def search_films(self, search: str) -> dict:
 
         gemini_prompt = f"""
 You are a film search query parser and film recommendation assistant.
@@ -87,18 +87,9 @@ User query:
         
         reason = response.get("reason") or (f'Not found reason in response for query: {search}')
             
-        filters = {
+        suggest = {
             key: response.get(key)
             for key in ["titles", "genre", "year", "director", "actors", "language", "reason", "suggest"]
         }
 
-        if session_id is not None:
-            request_record = SearchRequest(
-                session_id=session_id,
-                search_query=search,
-                filters=filters,
-                reason=reason
-            )
-            request_record.save()
-
-        return filters
+        return { "suggest": suggest, "reason": reason }

@@ -7,6 +7,8 @@ class SearchRequest(models.Model):
     search_query = models.CharField(max_length=255)
     filters = models.JSONField(default=dict)
     reason = models.TextField()
+    suggested_films_count = models.IntegerField(null=True, blank=True)
+    films_not_found_count = models.IntegerField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
