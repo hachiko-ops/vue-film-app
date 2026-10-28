@@ -54,48 +54,51 @@ Important rules:
 User query:
 {search}
     """
-        
-        response = self.client.models.generate_content(
-            model="gemini-3.5-flash-lite",
-            contents=gemini_prompt,
-            config=types.GenerateContentConfig(          
-                response_mime_type="application/json",
-                response_schema=types.Schema(
-                    type=types.Type.OBJECT,
-                    properties={
-                        "titles": {"type": 'ARRAY', "items": {"type": 'STRING'}},
-                        "genre": {"type": 'STRING'},
-                        "year": {"type": 'STRING'},
-                        "director": {"type": 'STRING'},
-                        "actors": {"type": 'ARRAY', "items": {"type": 'STRING'}},
-                        "language": {"type": 'STRING'},
-                        "reason": {"type": 'STRING'},
-                        "suggest": {"type": 'STRING'}
-                    },
-                    required=[
-                        "titles",
-                        "genre",
-                        "year",
-                        "director",
-                        "actors",
-                        "language",
-                        "reason",
-                        "suggest",
-                    ], 
-                ),
-                tools=[self.verify_film]
-            )
+
+        tools_map = {
+            "verify_film": self.verify_film
+        }
+
+        config = types.GenerateContentConfig(          
+            tools=[self.verify_film]
         )
 
-        try: 
-            response = json.loads(response.text)
+        chat = self.client.chats.create(
+            model="gemini-3.5-flash-lite",
+            config=config
+        )
+
+        response = chat.send_message(gemini_prompt)
+        while response.function_calls:
+            for function_call in response.function_call:
+                name = function_call.name
+                args = function_call.args
+
+                if name not in tools_map:
+                    continue
+
+                tool_result = tools_map[name](**args)
+                response = chat.send_message(
+                    types.Part.from_function_response(
+                        name=name,
+                        response={"result": tool_result}
+                    )
+                )
+
+        try:
+            # Se la risposta include ancora Markdown (es. ```json ... ```), lo ripuliamo
+            raw_text = response.text.strip()
+            if raw_text.startswith("```"):
+                raw_text = raw_text.split("\n", 1)[1].rsplit("```", 1)[0].strip()
+
+            data = json.loads(raw_text)
         except (json.JSONDecodeError, TypeError) as e:
             raise ValueError(f"Gemini returned an invalid JSON response: {str(e)}") from e
         
-        reason = response.get("reason") or (f'Not found reason in response for query: {search}')
+        reason = data.get("reason") or (f'Not found reason in response for query: {search}')
             
         suggest = {
-            key: response.get(key)
+            key: data.get(key)
             for key in ["titles", "genre", "year", "director", "actors", "language", "reason", "suggest"]
         }
 
