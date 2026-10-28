@@ -21,6 +21,7 @@ class FilmSearchService:
                 check = self.film_service.find_film(film)
             except Exception:
                 films_not_found_count += 1
+                continue
 
             if check is not None:
                 response['suggest']['films'].append(check)

@@ -18,3 +18,6 @@ def search(request, session_id=None):
     # TODO Check if on OMDB API exists all films suggest from Gemini, if not, remove them from the list otherwise return the list of films found in OMDB API with all details.
 
     return JsonResponse(films, safe=False)
+
+def search_movie(title:str) -> dict:
+    
